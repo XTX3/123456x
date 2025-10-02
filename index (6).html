@@ -1,417 +1,271 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!doctype html>
+<html lang="ar">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>متجر احترافي - تجربة شراء مميزة</title>
-
-<!-- خط Google Cairo -->
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>شات عضو - مسؤول (Firebase) - الإدارة</title>
 <style>
-  /* RESET */
-  * {
-    box-sizing: border-box;
-    margin: 0; padding: 0;
-  }
-  body {
-    font-family: 'Cairo', Tahoma, sans-serif;
-    background: #FFFFFF;
-    color: #333333;
-    min-height: 100vh;
-    padding: 25px 15px;
-  }
-  header {
-    text-align: center;
-    font-size: 2.8rem;
-    font-weight: 700;
-    margin-bottom: 30px;
-    letter-spacing: 4px;
-    color: #6B5B95;
-    text-shadow: 0 0 10px #9A8C98;
-  }
-
-  .products {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
-    gap: 20px;
-    justify-items: center;
-  }
-  .product {
-    background: linear-gradient(145deg, #9A8C98, #6B5B95);
-    border-radius: 14px;
-    box-shadow: 0 8px 20px rgba(107,91,149,0.4);
-    cursor: pointer;
-    transition: transform 0.35s ease, box-shadow 0.45s ease;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    user-select: none;
-    width: 190px;
-  }
-  .product:hover,
-  .product:focus {
-    transform: translateY(-10px);
-    box-shadow: 0 12px 32px rgba(107,91,149,0.7);
-    outline: none;
-  }
-  .product img {
-    width: 100%;
-    height: 140px;
-    object-fit: cover;
-    border-bottom: 3px solid #3F51B5;
-    transition: transform 0.35s ease;
-    border-top-left-radius: 14px;
-    border-top-right-radius: 14px;
-  }
-  .product:hover img,
-  .product:focus img {
-    transform: scale(1.05);
-  }
-  .product h3 {
-    margin: 14px 0 8px;
-    font-weight: 700;
-    font-size: 1.15rem;
-    color: #f0e6f7;
-    text-shadow: 0 0 7px #3F51B5AA;
-    text-align: center;
-  }
-  .product p {
-    font-size: 1.05rem;
-    color: #d3c5e3;
-    margin-bottom: 14px;
-    font-weight: 600;
-  }
-
-  .modal {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.97);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    padding: 25px;
-    z-index: 1000;
-  }
-  .modal.active {
-    display: flex;
-    animation: modalFadeIn 0.45s ease forwards;
-  }
-  @keyframes modalFadeIn {
-    from {opacity: 0; transform: translateY(45px);}
-    to {opacity: 1; transform: translateY(0);}
-  }
-  .modal-content {
-    background: #f7f5fb;
-    max-width: 620px;
-    width: 100%;
-    border-radius: 24px;
-    box-shadow: 0 0 50px rgba(107,91,149,0.25);
-    padding: 30px 28px 38px;
-    position: relative;
-    color: #4b3f71;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    user-select: none;
-  }
-  .close-btn {
-    position: absolute;
-    top: 20px; left: 20px;
-    background: transparent;
-    border: none;
-    font-size: 2.2rem;
-    color: #6B5B95;
-    cursor: pointer;
-    transition: color 0.35s ease;
-  }
-  .close-btn:hover {
-    color: #3F51B5;
-  }
-  .modal-content img {
-    width: 100%;
-    max-height: 320px;
-    object-fit: contain;
-    border-radius: 20px;
-    box-shadow: 0 0 30px rgba(107,91,149,0.3);
-    margin-bottom: 25px;
-  }
-  .modal-content h2 {
-    font-size: 2.3rem;
-    margin-bottom: 12px;
-    color: #3F51B5;
-    text-align: center;
-    text-shadow: 0 0 15px #9A8C98;
-  }
-  .modal-content p.desc {
-    font-size: 1.25rem;
-    line-height: 1.65;
-    margin-bottom: 22px;
-    color: #5a507e;
-    text-align: justify;
-    letter-spacing: 0.06em;
-  }
-  .modal-content h3.price {
-    font-size: 1.65rem;
-    font-weight: 700;
-    color: #7B6CA8;
-    margin-bottom: 30px;
-    text-shadow: 0 0 8px #7B6CA8bb;
-  }
-
-  .btn {
-    background: linear-gradient(135deg, #3F51B5, #7B6CA8);
-    border: none;
-    border-radius: 16px;
-    padding: 16px 42px;
-    color: #f0e6f7;
-    font-weight: 700;
-    font-size: 1.3rem;
-    cursor: pointer;
-    box-shadow: 0 6px 18px rgba(123,108,168,0.85);
-    transition: all 0.32s ease;
-    user-select: none;
-    margin-bottom: 14px;
-    letter-spacing: 0.06em;
-  }
-  .btn:hover {
-    background: linear-gradient(135deg, #7B6CA8, #3F51B5);
-    box-shadow: 0 12px 30px rgba(123,108,168,1);
-    transform: scale(1.07);
-  }
-
-  .steps {
-    width: 100%;
-    margin-top: 28px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .step {
-    width: 100%;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-  }
-  .step.active {
-    display: flex;
-    animation: fadeIn 0.45s ease forwards;
-  }
-  .step input[type="text"],
-  .step input[type="password"] {
-    width: 85%;
-    max-width: 340px;
-    padding: 14px 18px;
-    border-radius: 12px;
-    border: 2px solid #9A8C98;
-    background: #ece6f1;
-    color: #5a507e;
-    font-size: 1.15rem;
-    transition: border-color 0.35s ease, box-shadow 0.35s ease;
-    outline: none;
-    margin-bottom: 16px;
-    letter-spacing: 0.04em;
-  }
-  .step input[type="text"]:focus,
-  .step input[type="password"]:focus {
-    border-color: #7B6CA8;
-    box-shadow: 0 0 15px #7B6CA8bb;
-  }
-
-  .completed-message {
-    text-align: center;
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #7B6CA8;
-    margin-top: 25px;
-    display: none;
-    animation: fadeIn 0.5s ease forwards;
-  }
-
-  .error-msg {
-    color: #e75b5b;
-    font-weight: 700;
-    margin-top: 14px;
-    letter-spacing: 0.04em;
-  }
-
-  @keyframes fadeIn {
-    from {opacity: 0; transform: translateY(12px);}
-    to {opacity: 1; transform: translateY(0);}
-  }
+body{font-family:system-ui,Segoe UI,Arial;display:flex;gap:16px;padding:16px;background:#f5f7fb}
+.panel{background:white;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.06);padding:16px;flex:1;min-width:320px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.hidden{display:none}
+#chatList{max-height:60vh;overflow:auto;border:1px solid #eee;padding:8px;border-radius:6px}
+.chat-item{padding:8px;border-bottom:1px solid #f0f0f0;cursor:pointer}
+.chat-item:hover{background:#f9fbff}
+.small{font-size:13px;color:#666}
+.role-badge{font-size:12px;padding:4px 6px;border-radius:6px;background:#eee}
+.flex{display:flex;gap:12px}
+#chatModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;justify-content:center;align-items:center}
+#chatBox{background:#fff;width:90%;max-width:500px;border-radius:8px;padding:16px;display:flex;flex-direction:column;height:70vh}
+#messages{flex:1;overflow:auto;border:1px solid #eee;padding:12px;border-radius:6px;background:#fff;display:flex;flex-direction:column;margin-bottom:12px}
+.msg{margin:8px 0;max-width:75%}
+.me{align-self:flex-end;background:#dcf8c6;padding:8px;border-radius:8px}
+.other{align-self:flex-start;background:#fff;padding:8px;border-radius:8px;border:1px solid #eee}
+.msg-row{display:flex;flex-direction:column}
+form{display:flex;gap:8px;margin-top:8px}
+input[type="text"]{flex:1;padding:10px;border-radius:6px;border:1px solid #ddd}
+button{padding:10px 12px;border-radius:6px;border:0;background:#2563eb;color:white;cursor:pointer}
+.closeBtn{align-self:flex-end;background:#ef4444;color:white;padding:4px 8px;border-radius:6px;border:none;margin-bottom:8px;cursor:pointer}
+@media(max-width:900px){body{flex-direction:column}}
 </style>
 </head>
 <body>
 
-<header>🛒 متجر احترافي</header>
-
-<section class="products" id="productList">
-  <article class="product" tabindex="0" onclick="openModal('منتج 1', 'وصف مفصل وجذاب لمنتج 1 يحتوي على مميزات رائعة تناسب احتياجاتك.', '50$', 'https://via.placeholder.com/400')">
-    <img src="https://via.placeholder.com/400" alt="منتج 1" />
-    <h3>منتج 1</h3>
-    <p>50$</p>
-  </article>
-  <article class="product" tabindex="0" onclick="openModal('منتج 2', 'وصف مفصل وجذاب لمنتج 2 يحتوي على مميزات رائعة تناسب احتياجاتك.', '75$', 'https://via.placeholder.com/400')">
-    <img src="https://via.placeholder.com/400" alt="منتج 2" />
-    <h3>منتج 2</h3>
-    <p>75$</p>
-  </article>
-</section>
-
-<div class="modal" id="productModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="modal-content">
-    <button class="close-btn" aria-label="إغلاق" onclick="closeModal()">×</button>
-    <img id="modalImg" src="" alt="صورة المنتج" />
-    <h2 id="modalTitle"></h2>
-    <p class="desc" id="modalDesc"></p>
-    <h3 class="price" id="modalPrice"></h3>
-
-    <button class="btn" id="buyBtn" onclick="startPurchase()">شراء</button>
-
-    <div class="steps">
-      <div class="step" id="stepName">
-        <input type="text" id="fullName" placeholder="الاسم الثلاثي" aria-label="الاسم الثلاثي" />
-        <input type="text" id="phoneShamCash" placeholder="رقم المرتبط بشام كاش" aria-label="رقم المرتبط بشام كاش" />
-        <input type="text" id="accountShamCash" placeholder="رقم حساب شام كاش" aria-label="رقم حساب شام كاش" />
-        <input type="text" id="contactNumber" placeholder="رقم للتواصل (واتساب)" aria-label="رقم للتواصل واتساب" />
-        <button class="btn" onclick="goToUploadStep()">التالي</button>
+<!-- تسجيل / دخول -->
+<div class="panel" style="max-width:400px;">
+  <div class="header">
+    <h3>تسجيل / دخول</h3>
+    <span id="userStatus" class="small">غير متصل</span>
+  </div>
+  <div id="authForms">
+    <input id="liEmail" type="email" placeholder="إيميل" style="width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px solid #ddd">
+    <input id="liPass" type="password" placeholder="كلمة مرور" style="width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px solid #ddd">
+    <button id="loginBtn">دخول</button>
+    <button id="signupBtn" style="background:#10b981">تسجيل جديد</button>
+  </div>
+  <div id="signedInPanel" class="hidden">
+    <div class="flex" style="align-items:center;justify-content:space-between">
+      <div>
+        <div id="displayEmail" style="font-weight:600"></div>
+        <div id="displayRole" class="small role-badge" style="margin-top:6px"></div>
       </div>
-
-      <div class="step" id="stepUpload">
-        <p style="font-weight:700; font-size:1.1rem; margin-bottom:12px;">رفع الهوية السورية أو إخراج القيد</p>
-        <input type="file" id="imageFront" accept="image/*" aria-label="صورة الهوية الأمامية" />
-        <input type="file" id="imageBack" accept="image/*" aria-label="صورة الهوية الخلفية" style="margin-top:12px;" />
-        <button class="btn" onclick="finalizePurchase()">شراء</button>
+      <div>
+        <button id="logoutBtn" style="background:#ef4444">خروج</button>
       </div>
     </div>
-
-    <p class="completed-message" id="completedMsg">تم التحقق! جاري تحويلك...</p>
   </div>
 </div>
 
+<!-- لوحة الإدارة (قائمة الدردشات) -->
+<div class="panel" style="flex:2;min-width:480px;">
+  <div class="header">
+    <h3>شات العضو ↔ المسؤول</h3>
+  </div>
+
+  <div id="adminView" class="hidden">
+    <h4>قائمة المحادثات</h4>
+    <div id="chatList"></div>
+  </div>
+
+  <div id="memberView" class="hidden">
+    <h4>محادثتك مع المسؤول</h4>
+    <button id="openMemberChatBtn">افتح المحادثة</button>
+  </div>
+</div>
+
+<!-- نافذة الدردشة -->
+<div id="chatModal">
+  <div id="chatBox">
+    <button class="closeBtn" onclick="closeChat()">✖ اغلاق</button>
+    <div id="messages"></div>
+    <form id="sendForm" autocomplete="off">
+      <input id="messageInput" type="text" placeholder="اكتب رسالة..." autocomplete="off"/>
+      <button type="submit">إرسال</button>
+    </form>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
 <script>
-  let currentProduct = '';
+// إعدادات Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyDdPSV6OSPzqgdC5xWWfOCH2msTefFyoig",
+  authDomain: "uusuf-535ce.firebaseapp.com",
+  projectId: "uusuf-535ce",
+  storageBucket: "uusuf-535ce.appspot.com",
+  messagingSenderId: "1091306629647",
+  appId: "1:1091306629647:web:f9b1bdac9d179260f4117a",
+  measurementId: "G-KL6PGCZ04P"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-  function openModal(name, desc, price, img) {
-    currentProduct = name;
-    document.getElementById('modalTitle').innerText = name;
-    document.getElementById('modalDesc').innerText = desc;
-    document.getElementById('modalPrice').innerText = price;
-    document.getElementById('modalImg').src = img;
-    document.getElementById('productModal').classList.add('active');
-    resetSteps();
-  }
-  function closeModal() {
-    document.getElementById('productModal').classList.remove('active');
-    resetSteps();
-  }
-  function resetSteps() {
-    document.getElementById('buyBtn').style.display = 'inline-block';
-    ['stepName', 'stepUpload'].forEach(id => {
-      document.getElementById(id).classList.remove('active');
-      document.getElementById(id).style.display = 'none';
+// إعداد البريد الخاص بالمسؤول
+const adminEmail = "uusuf1212@gmail.com";
+
+// عناصر الصفحة
+const signupBtn = document.getElementById('signupBtn');
+const loginBtn = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const liEmail = document.getElementById('liEmail');
+const liPass = document.getElementById('liPass');
+const userStatus = document.getElementById('userStatus');
+const authForms = document.getElementById('authForms');
+const signedInPanel = document.getElementById('signedInPanel');
+const displayEmail = document.getElementById('displayEmail');
+const displayRole = document.getElementById('displayRole');
+const adminView = document.getElementById('adminView');
+const memberView = document.getElementById('memberView');
+const chatList = document.getElementById('chatList');
+const openMemberChatBtn = document.getElementById('openMemberChatBtn');
+const chatModal = document.getElementById('chatModal');
+const messagesDiv = document.getElementById('messages');
+const sendForm = document.getElementById('sendForm');
+const messageInput = document.getElementById('messageInput');
+
+let currentUser = null;
+let currentRole = null;
+let unsubscribeChatList = null;
+let currentChatId = null;
+
+// تسجيل جديد
+signupBtn.addEventListener('click', async () => {
+  try {
+    await auth.createUserWithEmailAndPassword(liEmail.value, liPass.value);
+    alert("تم إنشاء الحساب، الآن سجل الدخول");
+  } catch (e) { alert(e.message) }
+});
+
+// تسجيل دخول
+loginBtn.addEventListener('click', async () => {
+  try {
+    await auth.signInWithEmailAndPassword(liEmail.value, liPass.value);
+  } catch (e) { alert(e.message) }
+});
+
+// خروج
+logoutBtn.addEventListener('click', async () => {
+  if(unsubscribeChatList) unsubscribeChatList();
+  await auth.signOut();
+  location.reload();
+});
+
+// فتح وإغلاق نافذة الدردشة
+function openChat(chatId){
+  currentChatId = chatId;
+  chatModal.style.display = "flex";
+  listenForMessages();
+}
+function closeChat(){
+  chatModal.style.display = "none";
+  if(unsubscribeMessages) unsubscribeMessages();
+}
+
+// استماع للرسائل
+let unsubscribeMessages = null;
+function listenForMessages(){
+  if(!currentChatId) return;
+  if(unsubscribeMessages) unsubscribeMessages();
+  unsubscribeMessages = db.collection('chats').doc(currentChatId)
+    .collection('messages').orderBy('createdAt')
+    .onSnapshot(snapshot=>{
+      messagesDiv.innerHTML='';
+      snapshot.forEach(doc=>{
+        const m = doc.data();
+        const isMine = m.from === currentUser.email;
+        const row = document.createElement('div');
+        row.className = 'msg-row';
+        const box = document.createElement('div');
+        box.className = 'msg ' + (isMine ? 'me' : 'other');
+        box.textContent = m.text;
+        row.appendChild(box);
+        messagesDiv.appendChild(row);
+      });
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
     });
-    document.getElementById('completedMsg').style.display = 'none';
-    document.getElementById('fullName').value = '';
-    document.getElementById('phoneShamCash').value = '';
-    document.getElementById('accountShamCash').value = '';
-    document.getElementById('contactNumber').value = '';
-    document.getElementById('imageFront').value = '';
-    document.getElementById('imageBack').value = '';
-  }
-  function startPurchase() {
-    document.getElementById('buyBtn').style.display = 'none';
-    showStep('stepName');
-  }
-  function goToUploadStep() {
-    const fullName = document.getElementById('fullName').value.trim();
-    const phoneShamCash = document.getElementById('phoneShamCash').value.trim();
-    const accountShamCash = document.getElementById('accountShamCash').value.trim();
-    const contactNumber = document.getElementById('contactNumber').value.trim();
+}
 
-    if (fullName.length < 3) {
-      alert('يرجى إدخال الاسم الثلاثي بشكل صحيح');
-      return;
-    }
-    if (phoneShamCash.length < 5) {
-      alert('يرجى إدخال رقم المرتبط بشام كاش بشكل صحيح');
-      return;
-    }
-    if (accountShamCash.length < 5) {
-      alert('يرجى إدخال رقم حساب شام كاش بشكل صحيح');
-      return;
-    }
-    if (contactNumber.length < 10) {
-      alert('يرجى إدخال رقم التواصل (واتساب) بشكل صحيح');
-      return;
-    }
-    showStep('stepUpload');
-  }
-  function showStep(stepId) {
-    ['stepName', 'stepUpload'].forEach(id => {
-      const el = document.getElementById(id);
-      if (id === stepId) {
-        el.classList.add('active');
-        el.style.display = 'flex';
-      } else {
-        el.classList.remove('active');
-        el.style.display = 'none';
-      }
-    });
-  }
-  function finalizePurchase() {
-    // تأكد رفع الصورتين (لكن بدون رفع فعلي)
-    const frontFile = document.getElementById('imageFront').files[0];
-    const backFile = document.getElementById('imageBack').files[0];
-    if (!frontFile || !backFile) {
-      alert('يرجى رفع الصورتين بشكل صحيح');
-      return;
-    }
-
-    const fullName = document.getElementById('fullName').value.trim();
-    const phoneShamCash = document.getElementById('phoneShamCash').value.trim();
-    const accountShamCash = document.getElementById('accountShamCash').value.trim();
-    const contactNumber = document.getElementById('contactNumber').value.trim();
-
-    const toEmail = "uusu.06@gmail.com";
-    const subject = encodeURIComponent(`طلب شراء - ${currentProduct}`);
-    const bodyText =
-      `تفاصيل الطلب:\n` +
-      `- الاسم الثلاثي: ${fullName}\n` +
-      `- رقم المرتبط بشام كاش: ${phoneShamCash}\n` +
-      `- رقم حساب شام كاش: ${accountShamCash}\n` +
-      `- رقم للتواصل (واتساب): ${contactNumber}\n\n` +
-      `* تم رفع صورتين الهوية السورية (أمامية وخلفية).\n\n` +
-      `يرجى التواصل لمتابعة الطلب.`;
-
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(toEmail)}&su=${subject}&body=${encodeURIComponent(bodyText)}`;
-
-    window.open(gmailUrl, "_blank");
-
-    const msg = document.getElementById('completedMsg');
-    msg.style.display = 'block';
-
-    setTimeout(() => {
-      closeModal();
-      msg.style.display = 'none';
-    }, 3000);
-  }
-
-  window.onclick = function(e) {
-    const modal = document.getElementById('productModal');
-    if (e.target === modal) {
-      closeModal();
-    }
+// إرسال رسالة
+sendForm.addEventListener('submit', async e=>{
+  e.preventDefault();
+  const text = messageInput.value.trim();
+  if(!text) return;
+  const msg = {
+    text,
+    from: currentUser.email,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
   };
-  window.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      closeModal();
-    }
-  });
-</script>
+  const chatRef = db.collection('chats').doc(currentChatId);
+  await chatRef.collection('messages').add(msg);
+  await chatRef.set({
+    email: currentUser.email,
+    displayName: currentUser.displayName || currentUser.email,
+    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+  }, {merge:true});
+  messageInput.value='';
+});
 
+// حالة المستخدم
+auth.onAuthStateChanged(async user=>{
+  currentUser = user;
+  if(user){
+    userStatus.textContent = 'متصل';
+    authForms.style.display = 'none';
+    signedInPanel.classList.remove('hidden');
+    displayEmail.textContent = user.email;
+
+    currentRole = (user.email.toLowerCase() === adminEmail.toLowerCase()) ? 'admin' : 'member';
+    displayRole.textContent = currentRole === 'admin' ? 'مسؤول' : 'عضو';
+
+    if(currentRole==='admin'){
+      adminView.classList.remove('hidden');
+      memberView.classList.add('hidden');
+      startAdminChatListListener();
+    } else {
+      memberView.classList.remove('hidden');
+      adminView.classList.add('hidden');
+      // جعل المحادثة تفتح تلقائيًا للعضو
+      currentChatId = user.email;
+      openMemberChatBtn.onclick = ()=> openChat(currentChatId);
+      openChat(currentChatId);
+    }
+
+  } else {
+    userStatus.textContent='غير متصل';
+    authForms.style.display='block';
+    signedInPanel.classList.add('hidden');
+    adminView.classList.add('hidden');
+    memberView.classList.add('hidden');
+  }
+});
+
+// قائمة المحادثات للمسؤول
+function startAdminChatListListener(){
+  chatList.innerHTML='جارٍ التحميل...';
+  unsubscribeChatList = db.collection('chats')
+    .orderBy('lastUpdated','desc')
+    .onSnapshot(snap=>{
+      chatList.innerHTML='';
+      if(snap.empty) chatList.innerHTML='<div class="small">لا توجد محادثات</div>';
+      snap.forEach(doc=>{
+        const data = doc.data();
+        const id = doc.id;
+        const el = document.createElement('div');
+        el.className='chat-item';
+        el.innerHTML = `
+          <strong>${data.displayName || id}</strong>
+          <div class="small">${data.email || ''}</div>
+          <button onclick="openChat('${id}')">فتح الدردشة</button>
+        `;
+        chatList.appendChild(el);
+      });
+    });
+}
+</script>
 </body>
 </html>
