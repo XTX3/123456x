@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="ar">
 <head>
@@ -6,28 +5,177 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>شات عضو - مسؤول (Firebase) - الإدارة</title>
 <style>
-body{font-family:system-ui,Segoe UI,Arial;display:flex;gap:16px;padding:16px;background:#f5f7fb}
-.panel{background:white;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.06);padding:16px;flex:1;min-width:320px}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+body{
+  font-family:system-ui,Segoe UI,Arial;
+  display:flex;
+  gap:16px;
+  padding:16px;
+  background:#f5f7fb
+}
+.panel{
+  background:white;
+  border-radius:8px;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+  padding:16px;
+  flex:1;
+  min-width:320px;
+  box-sizing:border-box;
+}
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px
+}
 .hidden{display:none}
-#chatList{max-height:60vh;overflow:auto;border:1px solid #eee;padding:8px;border-radius:6px}
-.chat-item{padding:8px;border-bottom:1px solid #f0f0f0;cursor:pointer}
+#chatList{
+  max-height:60vh;
+  overflow:auto;
+  border:1px solid #eee;
+  padding:8px;
+  border-radius:6px
+}
+.chat-item{
+  padding:8px;
+  border-bottom:1px solid #f0f0f0;
+  cursor:pointer
+}
 .chat-item:hover{background:#f9fbff}
 .small{font-size:13px;color:#666}
-.role-badge{font-size:12px;padding:4px 6px;border-radius:6px;background:#eee}
+.role-badge{
+  font-size:12px;
+  padding:4px 6px;
+  border-radius:6px;
+  background:#eee
+}
 .flex{display:flex;gap:12px}
-#chatModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;justify-content:center;align-items:center}
-#chatBox{background:#fff;width:90%;max-width:500px;border-radius:8px;padding:16px;display:flex;flex-direction:column;height:70vh}
-#messages{flex:1;overflow:auto;border:1px solid #eee;padding:12px;border-radius:6px;background:#fff;display:flex;flex-direction:column;margin-bottom:12px}
+#chatModal{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+}
+#chatBox{
+  background:#fff;
+  width:90%;
+  max-width:500px;
+  border-radius:8px;
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  height:70vh;
+  box-sizing:border-box;
+}
+#messages{
+  flex:1;
+  overflow:auto;
+  border:1px solid #eee;
+  padding:12px;
+  border-radius:6px;
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+  margin-bottom:12px
+}
 .msg{margin:8px 0;max-width:75%}
-.me{align-self:flex-end;background:#dcf8c6;padding:8px;border-radius:8px}
-.other{align-self:flex-start;background:#fff;padding:8px;border-radius:8px;border:1px solid #eee}
+.me{
+  align-self:flex-end;
+  background:#dcf8c6;
+  padding:8px;
+  border-radius:8px
+}
+.other{
+  align-self:flex-start;
+  background:#fff;
+  padding:8px;
+  border-radius:8px;
+  border:1px solid #eee
+}
 .msg-row{display:flex;flex-direction:column}
 form{display:flex;gap:8px;margin-top:8px}
-input[type="text"]{flex:1;padding:10px;border-radius:6px;border:1px solid #ddd}
-button{padding:10px 12px;border-radius:6px;border:0;background:#2563eb;color:white;cursor:pointer}
-.closeBtn{align-self:flex-end;background:#ef4444;color:white;padding:4px 8px;border-radius:6px;border:none;margin-bottom:8px;cursor:pointer}
-@media(max-width:900px){body{flex-direction:column}}
+input[type="text"]{
+  flex:1;
+  padding:10px;
+  border-radius:6px;
+  border:1px solid #ddd;
+  box-sizing:border-box
+}
+button{
+  padding:10px 12px;
+  border-radius:6px;
+  border:0;
+  background:#2563eb;
+  color:white;
+  cursor:pointer
+}
+.closeBtn{
+  align-self:flex-end;
+  background:#ef4444;
+  color:white;
+  padding:4px 8px;
+  border-radius:6px;
+  border:none;
+  margin-bottom:8px;
+  cursor:pointer
+}
+input[type="email"],input[type="password"]{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+  border-radius:6px;
+  border:1px solid #ddd;
+  box-sizing:border-box
+}
+
+/* استجابة لأغلب الشاشات */
+@media (max-width:900px){
+  body{
+    flex-direction:column;
+    padding:8px;
+  }
+  .panel{
+    min-width:0;
+    width:100%;
+    margin-bottom:12px;
+    box-sizing:border-box;
+  }
+}
+@media (max-width:600px){
+  html,body{padding:0;}
+  .panel{
+    padding:8px;
+    border-radius:0;
+    box-shadow:none;
+    margin-bottom:8px;
+  }
+  #chatBox{
+    width:98vw;
+    height:92vh;
+    max-width:none;
+    border-radius:0;
+    padding:6px;
+  }
+  #messages{
+    padding:6px;
+    margin-bottom:6px;
+  }
+  .closeBtn{
+    font-size:15px;
+    padding:2px 6px;
+  }
+  button,input[type="text"],input[type="email"],input[type="password"]{
+    font-size:15px;
+    padding:8px 6px;
+  }
+}
+@media (max-width:400px){
+  #chatBox{height:98vh}
+  .msg{font-size:13px;}
+}
 </style>
 </head>
 <body>
@@ -39,8 +187,8 @@ button{padding:10px 12px;border-radius:6px;border:0;background:#2563eb;color:whi
     <span id="userStatus" class="small">غير متصل</span>
   </div>
   <div id="authForms">
-    <input id="liEmail" type="email" placeholder="إيميل" style="width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px solid #ddd">
-    <input id="liPass" type="password" placeholder="كلمة مرور" style="width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px solid #ddd">
+    <input id="liEmail" type="email" placeholder="إيميل">
+    <input id="liPass" type="password" placeholder="كلمة مرور">
     <button id="loginBtn">دخول</button>
     <button id="signupBtn" style="background:#10b981">تسجيل جديد</button>
   </div>
@@ -231,7 +379,6 @@ auth.onAuthStateChanged(async user=>{
     } else {
       memberView.classList.remove('hidden');
       adminView.classList.add('hidden');
-      // جعل المحادثة تفتح تلقائيًا للعضو
       currentChatId = user.email;
       openMemberChatBtn.onclick = ()=> openChat(currentChatId);
       openChat(currentChatId);
@@ -249,27 +396,47 @@ auth.onAuthStateChanged(async user=>{
 // قائمة المحادثات للمسؤول
 function startAdminChatListListener(){
   chatList.innerHTML='جارٍ التحميل...';
+  if(unsubscribeChatList) unsubscribeChatList();
   unsubscribeChatList = db.collection('chats')
     .orderBy('lastUpdated','desc')
-    .onSnapshot(snap=>{
+    .onSnapshot(async snap=>{
       chatList.innerHTML='';
-      if(snap.empty) chatList.innerHTML='<div class="small">لا توجد محادثات</div>';
-      snap.forEach(doc=>{
-        const data = doc.data();
-        const id = doc.id;
-        const el = document.createElement('div');
-        el.className='chat-item';
-        el.innerHTML = `
-          <strong>${data.displayName || id}</strong>
-          <div class="small">${data.email || ''}</div>
-          <button onclick="openChat('${id}')">فتح الدردشة</button>
-        `;
-        chatList.appendChild(el);
-      });
+      if(snap.empty) {
+        chatList.innerHTML='<div class="small">لا توجد محادثات</div>';
+        return;
+      }
+      // نسخ الدوال في مصفوفة (للسماح بالـ await)
+      const loadList = [];
+      for (const doc of snap.docs) {
+        loadList.push(renderChatItem(doc));
+      }
+      await Promise.all(loadList);
     });
+}
+
+// دالة فرعية لجلب الاسم واظهار العنصر
+async function renderChatItem(doc){
+  const data = doc.data();
+  const id = doc.id; // البريد الإلكتروني (chatId)
+  // جلب اسم المستخدم من users
+  let userName = "";
+  try {
+    const userDoc = await db.collection('users').doc(id).get();
+    userName = userDoc.exists && userDoc.data().name ? userDoc.data().name : "";
+  } catch(e) {userName="";}
+  const displayMain = userName ?
+    `<div style="font-weight:700;font-size:16px;color:#111">${userName}</div>`
+    : `<div style="font-weight:700;font-size:16px;color:#111">${data.displayName || id}</div>`;
+  const displaySub = `<div class="small" style="color:#aaa;direction:ltr">${data.email || id}</div>`;
+  const el = document.createElement('div');
+  el.className='chat-item';
+  el.innerHTML = `
+    ${displayMain}
+    ${displaySub}
+    <button onclick="openChat('${id}')">فتح الدردشة</button>
+  `;
+  chatList.appendChild(el);
 }
 </script>
 </body>
 </html>
-
-
